@@ -16,15 +16,26 @@ Start(){
 		~/.OPTIONS/oneko -dog -speed 20 &
 		~/.OPTIONS/oneko -sakura -speed 15&
 	fi;
-		
+	Check_device
+}
+Check_device(){
 	##Check for network mode
+	echo -e "\nChecking network device"
+
 	iwconfig wlan0 >/dev/null 2>/dev/null
 	if [ $? == 0 ]; then
 		CheckMAC
 	else
 		echo -e "Maybe network interface is in monitor mode. Trying to disable monitor mode before connect"
 		airmon-ng stop wlan0mon >/dev/null 2>/dev/nul
-		CheckMAC
+		if [ $? == 0 ]; then
+			CheckMAC
+		else
+			ip a |grep wlan >/dev/null 2>/dev/null
+			if [ $? != 0 ]; then
+				echo -e "Can't find out your wireless devices.\nPlease check your USB port if you are using a USB wifi."
+			fi;
+		fi;
 	fi;
 }
 CheckMAC(){
