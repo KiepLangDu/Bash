@@ -39,18 +39,23 @@ Check_device(){
 	fi;
 }
 CheckMAC(){
-	MAC=00:11:22:33:44:55
-	rMAC=$(echo $(macchanger -s wlan0)|tr " " "\n"|head -n 3|tail -n 1)
-	if [ $MAC == $rMAC ]; then
-	echo -e "Your MAC address has changed."
-	Connect
-	else
-	echo -e "You're using real MAC address.\nChanging MAC address before connect to network."
 	ifconfig wlan0 down
-	ping -c 2 127.0.0.1 >/dev/null
-	macchanger -m $MAC wlan0 >/dev/null
-	macchanger -s wlan0 |head -n 1
-	Connect
+	fMAC=00:11:22:33:44:55
+	crMAC=$(macchanger -s wlan0|grep Current |awk {'print $3'})
+	rMAC=$(macchanger -s wlan0|grep Permanent|awk {'print $3'})
+	if [ $crMAC == $fMAC ]; then
+		echo -e "Your MAC address has changed. Start to connect "
+		Connect
+	elif [ $crMAC == $rMAC ]; then
+		echo -e "You're using real MAC address.\nChanging MAC address before connect to network."
+		macchanger -m $fMAC wlan0 >/dev/null
+		crMAC=$(macchanger -s wlan0|grep Current |awk {'print $3'})
+		Connect
+	else
+		echo -e "Changing your MAC address before connect to network"
+		macchanger -m $fMAC wlan0 >/dev/null
+		crMAC=$(macchanger -s wlan0|grep Current |awk {'print $3'})
+		Connect
 	fi;
 }
 
@@ -82,9 +87,9 @@ Update(){
 	echo -e  "\n\nThis is Update method"
 	flag=$(date|head -c 15)
 	if [ "$flag" == "$(cat ~/.OPTIONS/.date)" ]; then
-		echo  -e "Your system is updated today"
+		echo  -e "Your system was updated today"
 	else
-		echo -e "Your system is not updated today. Now we are going to update it."
+		echo -e "Your system was not update today. Now we are going to update it."
 		apt-get update && apt-get upgrade -y
 	fi;
 	date |head -c 15 > ~/.OPTIONS/.date
