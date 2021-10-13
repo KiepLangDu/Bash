@@ -38,23 +38,27 @@ Check_device(){
 		fi;
 	fi;
 }
-CheckMAC(){
-	ifconfig wlan0 down
+UpdateMAC(){
 	fMAC=00:11:22:33:44:55
 	crMAC=$(macchanger -s wlan0|grep Current |awk {'print $3'})
 	rMAC=$(macchanger -s wlan0|grep Permanent|awk {'print $3'})
+}
+CheckMAC(){
+	ifconfig wlan0 down
+	UpdateMAC
 	if [ $crMAC == $fMAC ]; then
 		echo -e "Your MAC address has changed. Start to connect "
+		UpdateMAC
 		Connect
 	elif [ $crMAC == $rMAC ]; then
 		echo -e "You're using real MAC address.\nChanging MAC address before connect to network."
 		macchanger -m $fMAC wlan0 >/dev/null
-		crMAC=$(macchanger -s wlan0|grep Current |awk {'print $3'})
+		UpdateMAC
 		Connect
 	else
 		echo -e "Changing your MAC address before connect to network"
 		macchanger -m $fMAC wlan0 >/dev/null
-		crMAC=$(macchanger -s wlan0|grep Current |awk {'print $3'})
+		UpdateMAC
 		Connect
 	fi;
 }
@@ -98,4 +102,5 @@ Update(){
 	clear
 
 }
-Start
+#Start
+CheckMAC
