@@ -102,5 +102,4 @@ Update(){
 	clear
 
 }
-#Start
-CheckMAC
+Start
