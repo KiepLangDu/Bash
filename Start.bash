@@ -46,14 +46,14 @@ UpdateMAC(){
 CheckMAC(){
 	ifconfig wlan0 down
 	UpdateMAC
-	if [ $crMAC == $fMAC ]; then
-		echo -e "Your MAC address has changed. Start to connect "
-		UpdateMAC
-		Connect
-	elif [ $crMAC == $rMAC ]; then
+	sleep 2
+	if [ $crMAC == $rMAC ]; then
 		echo -e "You're using real MAC address.\nChanging MAC address before connect to network."
 		macchanger -m $fMAC wlan0 >/dev/null
 		UpdateMAC
+		Connect
+	elif [ $crMAC == $fMAC ]; then
+		echo -e "Your MAC address has changed. Start to connect "
 		Connect
 	else
 		echo -e "Changing your MAC address before connect to network"
