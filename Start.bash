@@ -22,12 +22,12 @@ Check_device(){
 	##Check for network mode
 	echo -e "\nChecking network device"
 
-	iwconfig wlan0 >/dev/null 2>/dev/null
+	ifconfig wlan0 >/dev/null 2>/dev/null
 	if [ $? == 0 ]; then
 		CheckMAC
 	else
 		echo -e "Maybe network interface is in monitor mode. Trying to disable monitor mode before connect"
-		airmon-ng stop wlan0mon >/dev/null 2>/dev/nul
+		airmon-ng stop wlan0mon >/dev/null 2>/dev/null
 		if [ $? == 0 ]; then
 			CheckMAC
 		else
@@ -45,8 +45,9 @@ UpdateMAC(){
 }
 CheckMAC(){
 	ifconfig wlan0 down
+	#ip link set wlan0 down
+	#sleep 2
 	UpdateMAC
-	sleep 2
 	if [ $crMAC == $rMAC ]; then
 		echo -e "You're using real MAC address.\nChanging MAC address before connect to network."
 		macchanger -m $fMAC wlan0 >/dev/null
