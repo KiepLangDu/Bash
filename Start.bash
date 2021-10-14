@@ -49,6 +49,8 @@ CheckMAC(){
 	#ip link set wlan0 down
 	#sleep 2
 	UpdateMAC
+	#echo -e "Current MAC: $crMAC\nReal MAC: $rMAC\nFake MAC: $fMAC"
+	
 	if [ $crMAC == $rMAC ]; then
 		echo -e "You're using real MAC address.\nChanging MAC address before connect to network."
 		macchanger -m $fMAC wlan0 >/dev/null
