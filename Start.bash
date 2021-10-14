@@ -44,6 +44,7 @@ UpdateMAC(){
 	rMAC=$(macchanger -s wlan0|grep Permanent|awk {'print $3'})
 }
 CheckMAC(){
+	#sleep 2 
 	ifconfig wlan0 down
 	#ip link set wlan0 down
 	#sleep 2
